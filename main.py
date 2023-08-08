@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import pandas as pd
 import xgboost as xgb
+import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error
 from sklearn.feature_extraction.text import CountVectorizer
@@ -32,7 +33,7 @@ async def about():
 def genero(Year: str):
     if Year.isdigit():
         df_year = df[df['year'] == Year]
-        top_generos = df_year['genres'].explode().value_counts().head(5).to_dict()
+        top_generos = df_year['genres'].explode().value_counts().head(5).index.to_dict()
         return top_generos
     else:
         return {"error": "El valor ingresado no es válido."}
@@ -44,7 +45,7 @@ def juegos(Year:str):
     while True:
         if Year.isdigit():  # Verifica si es un número válido
             df_year = df[df['year'] == Year]
-            top_titulos_completos = df['app_game'].explode().value_counts().to_dict()
+            top_titulos_completos = df['app_game'].explode().value_counts().index.to_dict()
             
             return  print("Los juegos del año son:",top_titulos_completos)
         else:
@@ -113,3 +114,6 @@ def metascore_by_year(Year: str):
             return top_5_juegos
     else:
         return {'error': "El valor ingresado no es válido. Ingrese un año válido en formato numérico."}
+    
+    
+#Modelo de Marchine Learning:
