@@ -34,24 +34,27 @@ async def about():
 def genero(Year: str):
     if Year.isdigit():
         df_year = df[df['year'] == Year]
-        top_generos = df_year['genres'].explode().value_counts().head(5).to_dict()
-        return top_generos
+        if not df_year.empty:
+            top_generos = df_year['genres'].explode().value_counts().head(5).to_dict()
+            return top_generos
+        else:
+            return {"error": f"No hay datos para el año {Year}."}
     else:
         return {"error": "El valor ingresado no es válido."}
 
 
+
 #Funcion para devolver los juegos de determinado año
+
 @app.get('/Title/{Year}')
-def juegos(Year:str):
-    while True:
-        if Year.isdigit():  # Verifica si es un número válido
-            df_year = df[df['year'] == Year]
-            top_titulos_completos = df['app_game'].explode().value_counts().to_dict()
-            
-            return  print("Los juegos del año son:",top_titulos_completos)
-        else:
-            print("Error: El valor ingresado no es valido.")
-            break
+def juegos(Year: str):
+    if Year.isdigit():  
+        df_year = df[df['year'] == Year]
+        top_titulos_completos = df_year['app_game'].explode().value_counts().to_dict()
+        return top_titulos_completos
+    else:
+        return {"error": "El valor ingresado no es válido."}
+
 
 #Funcion que devuelve los 5 specs mas repetidos del año
 @app.get('/specs/{Year}')
