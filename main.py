@@ -6,10 +6,11 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import NearestNeighbors
-
+import pickle
 # Titulo y Descripcion
 app = FastAPI(title='Proyecto Nº 1 Stram Games', description='API de datos y analalizis de juegos')
-
+with open('xgb_model.pkl', 'rb') as model_file:
+    xgb_model = pickle.load(model_file)
 # Global variables
 df = None
 nn = None
@@ -33,7 +34,7 @@ async def about():
 def genero(Year: str):
     if Year.isdigit():
         df_year = df[df['year'] == Year]
-        top_generos = df_year['genres'].explode().value_counts().head(5).index.to_dict()
+        top_generos = df_year['genres'].explode().value_counts().head(5).to_dict()
         return top_generos
     else:
         return {"error": "El valor ingresado no es válido."}
@@ -45,7 +46,7 @@ def juegos(Year:str):
     while True:
         if Year.isdigit():  # Verifica si es un número válido
             df_year = df[df['year'] == Year]
-            top_titulos_completos = df['app_game'].explode().value_counts().index.to_dict()
+            top_titulos_completos = df['app_game'].explode().value_counts().to_dict()
             
             return  print("Los juegos del año son:",top_titulos_completos)
         else:
@@ -58,7 +59,7 @@ def specs(Year:str):
     while True:
         if Year.isdigit():  # Verifica si es un número válido
             df_year = df[df['year'] == Year]
-            top_spesc=df_year['specs'].explode().value_counts().head(5).index.to_dict()
+            top_spesc=df_year['specs'].explode().value_counts().head(5).to_dict()
             return top_spesc
         else:
             print("Error: El valor ingresado no es valido.")
@@ -86,7 +87,7 @@ def Sentiment(Year:str):
         filtered_titles = df_year[df_year['sentiment'].notna() & ~df_year['user reviews'].str.match(r'^[1-9]$')]['title']
 
         # Obtener los títulos más comunes
-        top_titles = filtered_titles.value_counts().head(5).index.to_dict()
+        top_titles = filtered_titles.value_counts().head(5).to_dict()
 
         return top_titles
     else:
@@ -117,3 +118,21 @@ def metascore_by_year(Year: str):
     
     
 #Modelo de Marchine Learning:
+@app.get('/predict/{Year}')
+def predic(Year:str):
+    if Year.isdigit():
+        # Aquí debes cargar los datos correspondientes al año desde tu DataFrame
+        # y prepararlos para ser usados en el modelo para hacer la predicción.
+        # Supongamos que X es tu conjunto de variables predictoras para el año dado.
+
+        # Hacer la predicción de precio usando el modelo
+        predicted_price = xgb_model.predict(X)
+
+        # Calcular el RMSE (si tienes los valores reales de precio para ese año)
+        # Supongamos que y_real es el vector con los precios reales.
+        y_real = ...  # Cargar los valores reales de precio para el año dado
+        rmse = mean_squared_error(y_real, predicted_price, squared=False)
+
+        return {"predicted_price": predicted_price, "rmse": rmse}
+    else:
+        return {"error": "El valor ingresado no es válido."}
