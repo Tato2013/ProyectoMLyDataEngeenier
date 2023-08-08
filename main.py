@@ -48,12 +48,16 @@ def genero(Year: str):
 
 @app.get('/Title/{Year}')
 def juegos(Year: str):
-    if Year.isdigit():  
+    if Year.isdigit():
         df_year = df[df['year'] == Year]
-        top_titulos_completos = df_year['app_game'].explode().value_counts().to_dict()
-        return top_titulos_completos
+        if not df_year.empty:
+            top_titulos_completos = df_year['app_game'].explode().value_counts().to_dict()
+            return top_titulos_completos
+        else:
+            return {"error": f"No hay datos para el año {Year}."}
     else:
         return {"error": "El valor ingresado no es válido."}
+
 
 
 #Funcion que devuelve los 5 specs mas repetidos del año
