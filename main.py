@@ -5,34 +5,28 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import NearestNeighbors
-from fastapi import FastAPI, Request, Depends
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
 
 # Titulo y Descripcion
 app = FastAPI(title='Proyecto Nº 1 Stram Games', description='API de datos y analalizis de juegos')
-templates = Jinja2Templates(directory="templates")
 
 # Global variables
 df = None
+nn = None
 
 @app.on_event("startup")
 async def load_data():
-    global df
+    global df, nn
     df = pd.read_csv('steam_games_normalizado.csv')
-
-@app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    top_generos = genero("2020")
-    top_titulos_completos = juegos("2021")
-    # Llama a tus demás funciones y obtén los resultados que deseas mostrar
     
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "top_generos": top_generos,
-        "top_titulos_completos": top_titulos_completos,
-        # Agrega aquí los resultados de las demás funciones
-    })
+@app.get('/')
+async def read_root():
+    return {'Mi primera API. Dirígite a /docs'}    
+
+@app.get('/')
+async def about():
+    return {'Proyecto individual Nº1: Analisis de steam'}
+   
+
 #Funcion para devolver un top 5 de generos segun el año
 @app.get('/{Year}')
 def genero(Year:str):
