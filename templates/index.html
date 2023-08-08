@@ -1,0 +1,25 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recomendación de Películas</title>
+</head>
+<body>
+    <h1>Recomendación de Películas</h1>
+    <form action="/recomendacion" method="post">
+        <label for="year">Año:</label>
+        <input type="text" name="year" required><br>
+        <label for="genre">Género:</label>
+        <input type="text" name="genre" required><br>
+        <input type="submit" value="Obtener Recomendación">
+    </form>
+    {% if recommendations %}
+    <h2>Recomendaciones:</h2>
+    <ul>
+        {% for movie in recommendations %}
+        <li>{{ movie }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>
