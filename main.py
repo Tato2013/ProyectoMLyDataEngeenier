@@ -28,19 +28,18 @@ async def about():
    
 
 #Funcion para devolver un top 5 de generos segun el año
-@app.get('/{Year}')
-def genero(Year:str):
-    while True:
-        if Year.isdigit():  # Verifica si es un número válido
-            df_year = df[df['year'] == Year]
-            top_generos = df_year['genres'].explode().value_counts().head(5).index.to_dict()
-            return top_generos
-        else:
-            print("Error: El valor ingresado no es valido.")
-            break
+@app.get('/Generos/{Year}')
+def genero(Year: str):
+    if Year.isdigit():
+        df_year = df[df['year'] == Year]
+        top_generos = df_year['genres'].explode().value_counts().head(5).to_dict()
+        return top_generos
+    else:
+        return {"error": "El valor ingresado no es válido."}
+
 
 #Funcion para devolver los juegos de determinado año
-@app.get('/app_game/{Year}')
+@app.get('/Title/{Year}')
 def juegos(Year:str):
     while True:
         if Year.isdigit():  # Verifica si es un número válido
